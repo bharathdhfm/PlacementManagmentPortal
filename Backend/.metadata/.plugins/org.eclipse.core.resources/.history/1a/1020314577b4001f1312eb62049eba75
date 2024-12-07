@@ -1,0 +1,156 @@
+package com.kledf.springboot.controller;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+import com.kledf.springboot.model.Student;
+import com.kledf.springboot.model.Employer;
+import com.kledf.springboot.model.Job;
+import com.kledf.springboot.model.Admin;
+import com.kledf.springboot.service.AdminService;
+import org.springframework.web.client.RestTemplate;
+
+@RestController
+@RequestMapping("admin")
+public class AdminController {
+
+    @Autowired
+    private AdminService adminService;  // Only one service injected
+
+    @Autowired
+    private RestTemplate restTemplate;  // Autowire RestTemplate
+
+    // Admin home route
+    @GetMapping("/")
+    public String adminHome() {
+        return "I am admin";
+    }
+    @GetMapping("/test")
+    public ResponseEntity<String> testEndpoint() {
+        return ResponseEntity.ok("Test successful!");
+    }
+    // View all posts from external API
+    @GetMapping("viewallpost")
+    public List<Object> viewAllPosts() {
+        return adminService.displayAllPosts();  // Use adminService to fetch posts
+    }
+
+    // Display a specific post by ID
+    @GetMapping("displaypost")
+    public Object displayPost(@RequestParam int id) {
+        return adminService.displayPostById(id);  // Use adminService to fetch post by ID
+    }
+
+    // View all students (only accessible to admins)
+    @GetMapping("/viewallstudents")
+    public List<Student> viewAllStudents(@RequestParam String username) {
+        // Check if the user is an admin
+        if (!adminService.isAdmin(username)) {
+            throw new RuntimeException("Access Denied: Only admins can view all students.");
+        }
+
+        String url = "http://localhost:2000/student/all"; // URL of your Student Service
+        ResponseEntity<List<Student>> response = restTemplate.exchange(
+            url,
+            HttpMethod.GET,
+            null,
+            new ParameterizedTypeReference<List<Student>>() {}
+        );
+        return response.getBody(); // Return the list of students
+    }
+
+    // Register a new admin
+    @PostMapping("/register")
+    public String registerAdmin(@RequestBody Admin admin) {
+        adminService.registerAdmin(admin);
+        return "Admin registered successfully!";
+    }
+
+    // Admin login
+    @PostMapping("/login")
+    public ResponseEntity<Map<String, Object>> loginAdmin(@RequestParam String username, @RequestParam String password) {
+        Admin admin = adminService.checkAdminLogin(username, password);
+        Map<String, Object> response = new HashMap<>();
+        if (admin != null) {
+            response.put("success", true);
+            response.put("message", "Login successful!");
+            return ResponseEntity.ok(response);
+        } else {
+            response.put("success", false);
+            response.put("message", "Invalid username or password!");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
+    }
+
+    // Add a new employer
+    @PostMapping("/addemployer")
+    public String addEmployer(@RequestBody Employer employer) {
+        adminService.addEmployer(employer);
+        return "Employer added successfully!";
+    }
+    
+    //Add Student
+    @PostMapping("/addstudent")
+    public String addStudent(@RequestBody Student student) {
+    	adminService.addStudent(student);
+    	return "Student added Succcessfully";
+    }
+
+    // Delete an employer
+    @DeleteMapping("/deleteemployee/{id}")
+    public String deleteEmployer(@PathVariable Long id) {
+        adminService.deleteEmployerById(id);
+        return "Employer deleted successfully!";
+    }
+
+    // Update employer information
+    @PutMapping("/updateemployer/{id}")
+    public String updateEmployer(@PathVariable Long id, @RequestBody Employer employer) {
+        Employer updatedEmployer = adminService.updateEmployerById(id, employer);
+        return "Employer with ID " + id + " updated successfully!";
+    }
+
+    // Post a new job
+    @PostMapping("/postjob")
+    public String postJob(@RequestBody Job job, @RequestParam String adminUsername) {
+        adminService.postJob(job, adminUsername);  // Passing adminUsername to the service
+        return "Job posted successfully!";
+    }
+
+
+
+    // Delete a job
+    @DeleteMapping("/deletejob/{id}")
+    public String deleteJob(@PathVariable Long id) {
+        adminService.deleteJob(id);
+        return "Job deleted successfully!";
+    }
+
+    @PutMapping("/updatejob/{id}")
+    public String updateJob(@PathVariable Long id, @RequestBody Job job) {
+        // Update the job by the provided ID
+        job.setId(id);  // Make sure the ID is set before updating
+        adminService.updateJob(job);
+        return "Job with ID " + id + " updated successfully!";
+    }
+
+    // View all employees
+    @GetMapping("/viewallemployers")
+    public List<Employer> viewAllEmployers() {
+        return adminService.viewAllEmployers();  // Get all employers from the service
+    }
+
+    // View all jobs posted by employers
+    @GetMapping("/viewalljobs")
+    public List<Job> viewAllJobs() {
+        return adminService.viewAllJobs();
+    }
+}

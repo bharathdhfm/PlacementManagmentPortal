@@ -1,0 +1,164 @@
+package com.kledf.springboot.controller;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.kledf.springboot.model.Job;
+import com.kledf.springboot.model.Student;
+import com.kledf.springboot.service.StudentService;
+
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+
+@CrossOrigin(origins = "http://localhost:3000")
+
+@RequestMapping("student")
+@RestController
+public class StudentController {
+
+    @Autowired
+    private StudentService studentService;
+
+    // Home endpoint for Student
+    @GetMapping("/")
+    public String studentHome() {
+        return "I am Student";
+    }
+
+    // Get all students
+    @GetMapping("/all")
+    public List<Student> getAllStudents() {
+        return studentService.getAllStudents();
+    }
+
+    // Register a student
+    @PostMapping("/register")
+    public ResponseEntity<String> registerStudent(@RequestBody Student student) {
+        studentService.StudentRegistration(student);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Student registered successfully");
+    }
+
+    // Login a student
+    @PostMapping("/login")
+    public ResponseEntity<Map<String, Object>> loginStudent(@RequestParam String email, @RequestParam String password) {
+        Student student = studentService.CheckStudentLogin(email, password);
+        Map<String, Object> response = new HashMap<>();
+        if (student != null) {
+            response.put("success", true);
+            response.put("message", "Login successful!");
+            return ResponseEntity.ok(response);
+        } else {
+            response.put("success", false);
+            response.put("message", "Invalid email or password!");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
+    }
+
+    // Get all available jobs
+    @GetMapping("/jobs/all")
+    public ResponseEntity<List<Job>> getAllJobs() {
+        List<Job> jobs = studentService.getAllJobs();
+        if (jobs.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); // No jobs found
+        }
+        return ResponseEntity.ok(jobs);
+    }
+
+    // Apply for a job
+   /* @PostMapping("/apply")
+    public ResponseEntity<Map<String, String>> applyForJob(@RequestParam int studentId, @RequestParam Long jobId) {
+        Map<String, String> response = new HashMap<>();
+
+        try {
+            // Apply for the job
+            boolean isApplied = studentService.applyForJob(studentId, jobId);
+            
+            if (isApplied) {
+                response.put("success", "true");
+                response.put("message", "Applied for the job successfully!");
+                return ResponseEntity.ok(response);
+            } else {
+                response.put("success", "false");
+                response.put("message", "Failed to apply for the job! You may have already applied.");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
+        } catch (Exception e) {
+            response.put("success", "false");
+            response.put("message", "Error applying for the job: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+    }*/
+
+   /* // Get all applied jobs for a student
+    @GetMapping("/appliedJobs")
+    public ResponseEntity<List<Job>> getAppliedJobs(@RequestParam int studentId) {
+        List<Job> appliedJobs = studentService.getAppliedJobs(studentId);
+        if (appliedJobs.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); // No applied jobs found
+        }
+        return ResponseEntity.ok(appliedJobs);
+    }
+    */
+    
+ // View a student's profile
+ // @GetMapping("/profile")
+    public ResponseEntity<Map<String, Object>> viewProfile(@RequestParam String email) {
+        Student student = studentService.findByEmail(email);
+        Map<String, Object> response = new HashMap<>();
+        if (student != null) {
+            response.put("success", true);
+            response.put("profile", student);
+            return ResponseEntity.ok(response);
+        } else {
+            response.put("success", false);
+            response.put("message", "Student not found.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+    }
+
+    
+    @PostMapping("/uploadProfilePhoto")
+    public ResponseEntity<Map<String, Object>> uploadProfilePhoto(
+            @RequestParam("email") String email,
+            @RequestParam("file") MultipartFile file) {
+
+        Map<String, Object> response = new HashMap<>();
+        try {
+            String fileName = studentService.saveProfilePhoto(email, file);
+            response.put("success", true);
+            response.put("message", "Profile photo uploaded successfully!");
+            response.put("fileName", fileName);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Error uploading profile photo: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    @GetMapping("/profilePhoto")
+    public ResponseEntity<Resource> getProfilePhoto(@RequestParam String email) throws IOException {
+        String photoPath = studentService.getProfilePhoto(email);
+
+        Path filePath = Paths.get(photoPath).normalize();
+        Resource resource = new UrlResource(filePath.toUri());
+
+        if (resource.exists()) {
+            return ResponseEntity.ok().body(resource);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+
+}

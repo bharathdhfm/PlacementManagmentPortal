@@ -1,0 +1,178 @@
+package com.kledf.springboot.service;
+
+import java.io.IOException; // For handling file I/O exceptions
+import java.nio.file.Files; // For creating directories and writing files
+import java.nio.file.Path; // For file path representation
+import java.nio.file.Paths; // For creating Path objects
+import java.util.Date;
+import java.util.List; // For working with lists
+import java.util.Optional; // For handling optional values
+
+import org.springframework.beans.factory.annotation.Autowired; // For dependency injection
+import org.springframework.stereotype.Service; // To define a service class
+import org.springframework.web.multipart.MultipartFile; // For handling file uploads
+
+import com.kledf.springboot.model.Job; // Your Job entity class
+import com.kledf.springboot.model.JobApplication;
+import com.kledf.springboot.model.Student; // Your Student entity class
+import com.kledf.springboot.repository.JobApplicationRepository;
+import com.kledf.springboot.repository.JobRepository; // Repository for Job operations
+import com.kledf.springboot.repository.StudentRepository; // Repository for Student operations
+
+
+@Service
+public class StudentServiceImpl implements StudentService {
+
+    @Autowired
+    private StudentRepository studentRepository;
+
+    @Autowired
+    private JobRepository jobRepository;
+    
+    @Autowired
+    private JobApplicationRepository jobApplicationRepository;
+
+
+    @Override
+    public void StudentRegistration(Student student) {
+        studentRepository.save(student);
+    }
+
+    @Override
+    public Student CheckStudentLogin(String email, String password) {
+        return studentRepository.checkStudentLogin(email, password);
+    }
+
+    @Override
+    public List<Student> getAllStudents() {
+        return studentRepository.findAll(); // Fetch all students from the database
+    }
+
+    @Override
+    public List<Job> getAllJobs() {
+        return jobRepository.findAll(); // Retrieve all jobs from the database
+    }
+    
+
+    @Override
+    public boolean applyForJob(String studentEmail, Long jobId, String resumeUrl) {
+        // Find the student by email
+        Student student = studentRepository.findByEmail(studentEmail);
+        if (student == null) {
+            throw new IllegalArgumentException("Student not found with email: " + studentEmail);
+        }
+
+        // Find the job by ID
+        Optional<Job> jobOpt = jobRepository.findById(jobId);
+        if (jobOpt.isEmpty()) {
+            throw new IllegalArgumentException("Job not found with ID: " + jobId);
+        }
+
+        Job job = jobOpt.get();
+
+        // Check if the student has already applied for this job
+        JobApplication existingApplication = jobApplicationRepository.findByStudentAndJob(student, job);
+        if (existingApplication != null) {
+            return false; // Student has already applied
+        }
+
+        // Create a new job application
+        JobApplication jobApplication = new JobApplication();
+        jobApplication.setStudent(student);
+        jobApplication.setJob(job);
+        jobApplication.setResumeUrl(resumeUrl);
+        jobApplication.setStatus("pending"); // Set default status to "pending"
+        jobApplication.setAppliedOn(new Date());
+
+        jobApplicationRepository.save(jobApplication); // Save the application
+
+        return true; // Successfully applied for the job
+    }
+    @Override
+    public List<Job> getAppliedJobsByEmail(String studentEmail) {
+        // Find the student by email
+        Student student = studentRepository.findByEmail(studentEmail);
+        if (student == null) {
+            throw new IllegalArgumentException("Student not found with email: " + studentEmail);
+        }
+
+        // Get the applied jobs from the student's job applications
+        return student.getAppliedJobs(); // Assuming Student entity has a method to get applied jobs
+    }
+
+    @Override
+    public List<Job> getAppliedJobs(int studentId) {
+        Optional<Student> studentOpt = studentRepository.findById(studentId);
+        return studentOpt.map(Student::getAppliedJobs).orElse(List.of()); // Return applied jobs or empty list
+    }
+    
+    @Override
+    public Student findByEmail(String email) {
+        return studentRepository.findByEmail(email);
+    }
+    @Override
+    public String saveProfilePhoto(String email, MultipartFile file) throws IOException {
+        Student student = studentRepository.findByEmail(email);
+        if (student == null) {
+            throw new IllegalArgumentException("Student not found!");
+        }
+
+        // Validate file type
+        String originalFilename = file.getOriginalFilename();
+        if (originalFilename == null || !originalFilename.matches(".*\\.(jpg|jpeg|png)$")) {
+            throw new IllegalArgumentException("Only JPG, JPEG, and PNG files are allowed.");
+        }
+
+        // Define the upload directory
+        String uploadDir = "uploads/";
+        String fileName = System.currentTimeMillis() + "_" + originalFilename;
+        Path uploadPath = Paths.get(uploadDir);
+
+        Files.createDirectories(uploadPath);  // Safely create directories
+
+        Path filePath = uploadPath.resolve(fileName);
+        Files.write(filePath, file.getBytes());  // Save file to the uploads directory
+
+        // Save relative path to DB
+        String fileUrl = fileName;
+        student.setProfilePhotoUrl(fileUrl);
+        studentRepository.save(student);
+
+        return fileUrl;
+    }
+    
+    @Override
+    public String saveResume(String email, MultipartFile file) throws IOException {
+        Student student = studentRepository.findByEmail(email);
+        if (student == null) {
+            throw new IllegalArgumentException("Student not found!");
+        }
+
+        // Validate file type (PDF only)
+        String originalFilename = file.getOriginalFilename();
+        if (originalFilename == null || !originalFilename.matches(".*\\.pdf$")) {
+            throw new IllegalArgumentException("Only PDF files are allowed.");
+        }
+
+        // Define the upload directory
+        String uploadDir = "uploads/resumes/";  // Store resumes in a separate folder
+        String fileName = System.currentTimeMillis() + "_" + originalFilename;
+        Path uploadPath = Paths.get(uploadDir);
+
+        Files.createDirectories(uploadPath);  // Safely create directories if they don't exist
+
+        Path filePath = uploadPath.resolve(fileName);
+        Files.write(filePath, file.getBytes());  // Save the file to the uploads directory
+
+        // Save the relative path to the DB
+        String fileUrl = fileName;
+        student.setResumeUrl(fileUrl);
+        studentRepository.save(student);
+
+        return fileUrl;
+    }
+
+
+
+
+}

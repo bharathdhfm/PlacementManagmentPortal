@@ -1,0 +1,30 @@
+package com.kledf.springboot.dto;
+
+import org.springframework.web.multipart.MultipartFile;
+
+public class JobApplicationDTO {
+    private String email; // Email to identify the student
+    private Long jobId;   // Job ID to apply
+    private MultipartFile resume; // The resume file
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public Long getJobId() {
+		return jobId;
+	}
+	public void setJobId(Long jobId) {
+		this.jobId = jobId;
+	}
+	public MultipartFile getResume() {
+		return resume;
+	}
+	public void setResume(MultipartFile resume) {
+		this.resume = resume;
+	}
+
+    // Getters and setters...
+}
+

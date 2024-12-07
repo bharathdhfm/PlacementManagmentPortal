@@ -1,0 +1,5 @@
+package com.kledf.springboot.model;
+
+public class JobApplication {
+
+}

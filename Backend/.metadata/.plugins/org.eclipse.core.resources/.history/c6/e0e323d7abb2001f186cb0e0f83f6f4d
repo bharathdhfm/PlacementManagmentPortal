@@ -1,0 +1,37 @@
+spring.application.name=StudentService
+server.port=2003
+
+
+
+# Database Configuration (MySQL example)
+spring.datasource.url=jdbc:mysql://localhost:3306/sdpproject
+spring.datasource.username=root
+spring.datasource.password=dhfm
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+
+# Hibernate (JPA) Configuration
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
+
+# Eureka Configuration (for service discovery)
+eureka.client.service-url.default-zone=http://localhost:8761/eureka/
+eureka.instance.hostname=localhost
+eureka.instance.app=student
+
+# Enable Multipart file upload
+spring.servlet.multipart.enabled=true
+spring.servlet.multipart.max-file-size=10MB
+spring.servlet.multipart.max-request-size=10MB
+# Serve static files from the 'uploads' directory
+spring.web.resources.static-locations=classpath:/static/,file:./uploads/
+
+
+
+
+
+
+
+
+management.endpoint.info.enabled=true
+management.endpoints.web.exposure.include=*

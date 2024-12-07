@@ -1,0 +1,30 @@
+package com.kledf.springboot.service;
+
+import java.util.List;
+import com.kledf.springboot.model.Job;
+import com.kledf.springboot.model.Student;
+
+public interface StudentService {
+
+    List<Student> getAllStudents();
+    
+    void StudentRegistration(Student student);
+    
+    Student CheckStudentLogin(String email, String password);
+    
+    Student findByEmail(String email);
+    
+    List<Job> getAllJobs();
+    
+    Job getJobById(int jobId);
+    
+    void applyForJob(Student student, Job job, String resumePath);
+    
+    List<Job> getAppliedJobs(Student student);
+    
+    boolean studentExists(String email);
+    
+    void updateJobApplication(Student student, Job job, String resumePath);
+    
+    List<Job> getJobs();
+}

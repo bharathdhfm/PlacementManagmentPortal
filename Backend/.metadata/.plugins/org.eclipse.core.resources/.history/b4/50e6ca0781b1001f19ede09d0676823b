@@ -1,0 +1,91 @@
+package com.kledf.springboot.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.kledf.springboot.model.Job;
+import com.kledf.springboot.model.Student;
+import com.kledf.springboot.repository.StudentRepository;
+
+@Service
+public class StudentServiceImpl implements StudentService {
+
+    @Autowired
+    private StudentRepository studentRepository;
+
+    @Override
+    public List<Student> getAllStudents() {
+        return studentRepository.findAll();
+    }
+
+    @Override
+    public void StudentRegistration(Student student) {
+        studentRepository.save(student);  // Save or update the student record
+    }
+
+    @Override
+    public Student CheckStudentLogin(String email, String password) {
+        // Fetch student by email
+        Student student = studentRepository.findByEmail(email);
+        // If student is found and password matches, return student
+        if (student != null && student.getPassword().equals(password)) {
+            return student;
+        }
+        return null;  // Invalid credentials
+    }
+
+    @Override
+    public Student findByEmail(String email) {
+        return studentRepository.findByEmail(email);  // Query method to find student by email
+    }
+
+    @Override
+    public List<Job> getAllJobs() {
+        // Return all jobs (you would need to have a JobRepository to get actual job data)
+        return null;  // For now, assuming no jobs exist
+    }
+
+    @Override
+    public Job getJobById(int jobId) {
+        // Fetch job from repository based on job ID
+        return null;  // Placeholder for actual job retrieval logic
+    }
+
+    @Override
+    public void applyForJob(Student student, Job job, String resumePath) {
+        if (student != null && job != null) {
+            // Add job to student's applied jobs list
+            job.setStudentResume(resumePath);  // Set the resume path in the job object
+            student.getAppliedJobs().add(job);  // Add the job to the list of applied jobs for the student
+            studentRepository.save(student);  // Save the updated student with applied job
+        }
+    }
+
+    @Override
+    public List<Job> getAppliedJobs(Student student) {
+        if (student != null) {
+            return student.getAppliedJobs();  // Fetch applied jobs from the Student object
+        }
+        return null;  // If student is null, return null
+    }
+
+
+    @Override
+    public boolean studentExists(String email) {
+        return studentRepository.findByEmail(email) != null;  // Return true if student exists
+    }
+
+    @Override
+    public void updateJobApplication(Student student, Job job, String resumePath) {
+        // Here, we handle updating the student's job application
+        applyForJob(student, job, resumePath);  // Reusing the method for applying for a job
+    }
+
+    @Override
+    public List<Job> getJobs() {
+        // Return all job listings (this can be replaced with actual data fetching logic)
+        return null;  // Placeholder for fetching jobs
+    }
+}

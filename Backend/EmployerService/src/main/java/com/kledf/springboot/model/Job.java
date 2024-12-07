@@ -1,0 +1,121 @@
+package com.kledf.springboot.model;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
+@Entity
+@Table(name = "jobs_table")
+public class Job {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Version  // Added for optimistic locking
+    private Integer version;
+
+    @NotNull(message = "Job title cannot be null")
+    @Size(min = 5, max = 100, message = "Job title should be between 5 and 100 characters")
+    private String jobTitle;
+
+    private String jobDescription;
+
+    private String requiredSkills;
+
+    private String jobType;
+
+    private String location;
+
+    private String salaryRange;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "employer_id", nullable = true)
+    @JsonBackReference
+    private Employer employer;
+
+    private String postedBy;  // Admin username who posted the job
+
+    // Getters and Setters
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
+
+    public String getJobTitle() {
+        return jobTitle;
+    }
+
+    public void setJobTitle(String jobTitle) {
+        this.jobTitle = jobTitle;
+    }
+
+    public String getJobDescription() {
+        return jobDescription;
+    }
+
+    public void setJobDescription(String jobDescription) {
+        this.jobDescription = jobDescription;
+    }
+
+    public String getRequiredSkills() {
+        return requiredSkills;
+    }
+
+    public void setRequiredSkills(String requiredSkills) {
+        this.requiredSkills = requiredSkills;
+    }
+
+    public String getJobType() {
+        return jobType;
+    }
+
+    public void setJobType(String jobType) {
+        this.jobType = jobType;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getSalaryRange() {
+        return salaryRange;
+    }
+
+    public void setSalaryRange(String salaryRange) {
+        this.salaryRange = salaryRange;
+    }
+
+    public Employer getEmployer() {
+        return employer;
+    }
+
+    public void setEmployer(Employer employer) {
+        this.employer = employer;
+    }
+
+    public String getPostedBy() {
+        return postedBy;
+    }
+
+    public void setPostedBy(String postedBy) {
+        this.postedBy = postedBy;
+    }
+}

@@ -1,0 +1,33 @@
+package com.kledf.springboot.dto;
+
+public class JobApplicationDTO {
+
+    private String email;
+    private int jobId;
+    private String resume;
+
+    // Getters and Setters
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public int getJobId() {
+        return jobId;
+    }
+
+    public void setJobId(int jobId) {
+        this.jobId = jobId;
+    }
+
+    public String getResume() {
+        return resume;
+    }
+
+    public void setResume(String resume) {
+        this.resume = resume;
+    }
+}

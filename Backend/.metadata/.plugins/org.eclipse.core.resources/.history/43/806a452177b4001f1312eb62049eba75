@@ -1,0 +1,159 @@
+package com.kledf.springboot.service;
+
+import java.util.Arrays;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
+
+import com.kledf.springboot.model.Admin;
+import com.kledf.springboot.model.Employer;
+import com.kledf.springboot.model.Job;
+import com.kledf.springboot.model.Student;
+import com.kledf.springboot.repository.AdminRepository;
+import com.kledf.springboot.repository.EmployerRepository;
+import com.kledf.springboot.repository.JobRepository;
+import com.kledf.springboot.repository.StudentRepository;
+
+@Service
+public class AdminServiceImpl implements AdminService {
+
+    @Autowired
+    private RestTemplate restTemplate;
+
+    @Autowired
+    private AdminRepository adminRepository;
+
+    @Autowired
+    private EmployerRepository employerRepository;
+
+    @Autowired
+    private JobRepository jobRepository;
+
+    @Autowired
+    private StudentRepository studentRepository;
+    // Display all posts from external API (example: JSONPlaceholder)
+    @Override
+    public List<Object> displayAllPosts() {
+        Object[] posts = restTemplate.getForObject("https://jsonplaceholder.typicode.com/posts", Object[].class);
+        return Arrays.asList(posts);
+    }
+
+    // Display a post by ID from external API
+    @Override
+    public Object displayPostById(int id) {
+        return restTemplate.getForObject("https://jsonplaceholder.typicode.com/posts/" + id, Object.class);
+    }
+
+    // Register an admin into the database
+    @Override
+    public void registerAdmin(Admin admin) {
+        adminRepository.save(admin);
+    }
+
+    // Check if admin login is valid
+    @Override
+    public Admin checkAdminLogin(String uname, String pwd) {
+        return adminRepository.checkAdminLogin(uname, pwd); // Assuming this method exists in AdminRepository
+    }
+
+    // Check if the user is an admin based on username
+    @Override
+    public boolean isAdmin(String username) {
+        Admin admin = adminRepository.findByUsername(username);
+        return admin != null;
+    }
+
+    // Add a new employer
+    @Override
+    @Transactional
+    public Employer addEmployer(Employer employer) {
+        return employerRepository.save(employer);
+    }
+
+    // Delete employer by ID
+    @Override
+    @Transactional
+    public void deleteEmployerById(Long employerId) {
+        employerRepository.deleteById(employerId);
+    }
+
+    // Update an employer's information
+    @Override
+    public Employer updateEmployerById(Long employerId, Employer employer) {
+        Employer existingEmployer = employerRepository.findById(employerId).orElseThrow(() -> new RuntimeException("Employer not found"));
+        existingEmployer.setEmployerName(employer.getEmployerName());
+        existingEmployer.setCompanyName(employer.getCompanyName());
+        existingEmployer.setCompanyOverview(employer.getCompanyOverview());
+        existingEmployer.setContactNumber(employer.getContactNumber());
+        existingEmployer.setEmail(employer.getEmail());
+        existingEmployer.setIndustryType(employer.getIndustryType());
+        existingEmployer.setPassword(employer.getPassword());
+        return employerRepository.save(existingEmployer);
+    }
+
+    // View all employers
+    @Override
+    public List<Employer> viewAllEmployers() {
+        return employerRepository.findAll();
+    }
+
+    // Post a job by admin
+    @Override
+    @Transactional
+    public void postJob(Job job, String adminUsername) {
+        // Optional: Set the admin username to track who posted the job
+        job.setPostedBy(adminUsername); 
+        
+        // Save the job to the database
+        jobRepository.save(job);
+    }
+
+
+    // Delete a job by job ID
+    @Override
+    @Transactional
+    public void deleteJob(Long id) {
+        jobRepository.deleteById(id);
+    }
+
+    // Update job details
+    @Override
+    @Transactional
+    public void updateJob(Job job) {
+    	   Job existingJob = jobRepository.findById(job.getId()).orElseThrow(() -> new RuntimeException("Job not found"));
+           
+           // Update fields from the incoming job object
+           existingJob.setJobTitle(job.getJobTitle());
+           existingJob.setJobDescription(job.getJobDescription());
+           existingJob.setRequiredSkills(job.getRequiredSkills());
+           existingJob.setJobType(job.getJobType());
+           existingJob.setLocation(job.getLocation());
+           existingJob.setSalaryRange(job.getSalaryRange());
+           existingJob.setEmployer(job.getEmployer());  // Ensure the employer is set correctly
+           existingJob.setPostedBy(job.getPostedBy());  // Admin username who posted the job
+           
+           // Save the updated job to the database
+           jobRepository.save(existingJob);
+       }
+    
+    // View all jobs
+    @Override
+    public List<Job> viewAllJobs() {
+        return jobRepository.findAll();
+    }
+
+    // View job by ID
+    @Override
+    public Job viewJobById(Long jobId) {
+        return jobRepository.findById(jobId).orElse(null);
+    }
+
+	@Override
+	public Student addStudent(Student student) {
+		// TODO Auto-generated method stub
+		return studentRepository.save(student);
+	}
+}

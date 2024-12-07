@@ -1,0 +1,42 @@
+package com.kledf.springboot.service;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import com.kledf.springboot.model.Admin;
+import com.kledf.springboot.model.Employer;
+import com.kledf.springboot.model.Job;
+import com.kledf.springboot.model.Student;
+
+@Service
+public interface AdminService {
+
+    // External post operations (if required)
+    public List<Object> displayAllPosts();
+    public Object displayPostById(int id);
+    
+    // Admin operations
+    public Admin checkAdminLogin(String uname, String pwd);
+    void registerAdmin(Admin admin);
+    boolean isAdmin(String username);
+
+    // Post operations (Admin can view all posts)
+    public List<Job> viewAllJobs(); // View all jobs posted by admin
+    public Job viewJobById(Long jobId); // View a specific job by ID
+    
+    // Employer management (Admin can manage employers)
+    Employer addEmployer(Employer employer); // Add new employer
+    void deleteEmployerById(Long employerId); // Delete employer by ID
+    Employer updateEmployerById(Long employerId, Employer employer); // Update employer info by ID
+    List<Employer> viewAllEmployers();  // View all employers // View all employers in the system
+
+    // Job management (Admin only)
+    void postJob(Job job, String adminUsername);  // Pass adminUsername for logging or auditing
+
+    void deleteJob(Long jobId); // Delete a job by ID (Admin)
+    void updateJob(Job job); // Update job details (Admin)
+    
+    
+    Student addStudent(Student student);
+}

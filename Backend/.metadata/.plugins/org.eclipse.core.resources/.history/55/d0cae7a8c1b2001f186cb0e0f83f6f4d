@@ -1,0 +1,5 @@
+package com.kledf.springboot.repository;
+
+public interface JobApplicationRepository {
+
+}

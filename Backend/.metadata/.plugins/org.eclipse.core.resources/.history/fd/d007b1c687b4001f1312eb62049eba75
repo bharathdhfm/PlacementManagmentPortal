@@ -1,0 +1,12 @@
+package com.kledf.springboot.service;
+
+import jakarta.mail.MessagingException;
+
+public interface PasswordResetService {
+
+    // Method to send a password reset email
+    String sendPasswordResetEmail(String email) throws MessagingException;
+
+    // Method to reset the password using the reset token
+    String resetPassword(String token, String newPassword);
+}

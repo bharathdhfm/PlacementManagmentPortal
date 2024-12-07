@@ -1,0 +1,5 @@
+package com.kledf.springboot.service;
+
+public class PasswordResetService {
+
+}

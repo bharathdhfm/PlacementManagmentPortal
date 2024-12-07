@@ -1,0 +1,73 @@
+package com.kledf.springboot.service;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.kledf.springboot.model.Job;
+import com.kledf.springboot.model.Student;
+import com.kledf.springboot.repository.JobRepository;
+import com.kledf.springboot.repository.StudentRepository;
+
+@Service
+public class StudentServiceImpl implements StudentService {
+
+    @Autowired
+    private StudentRepository studentRepository;
+
+    @Autowired
+    private JobRepository jobRepository;
+
+    @Override
+    public void StudentRegistration(Student student) {
+        studentRepository.save(student);
+    }
+
+    @Override
+    public Student CheckStudentLogin(String email, String password) {
+        return studentRepository.checkStudentLogin(email, password);
+    }
+
+    @Override
+    public List<Student> getAllStudents() {
+        return studentRepository.findAll(); // Fetch all students from the database
+    }
+
+    @Override
+    public List<Job> getAllJobs() {
+        return jobRepository.findAll(); // Retrieve all jobs from the database
+    }
+
+   /* @Override
+    public boolean applyForJob(int studentId, Long jobId) {
+        Optional<Student> studentOpt = studentRepository.findById(studentId);
+        Optional<Job> jobOpt = jobRepository.findById(jobId);
+
+        if (studentOpt.isPresent() && jobOpt.isPresent()) {
+            Student student = studentOpt.get();
+            Job job = jobOpt.get();
+
+            // Check if the student has already applied for the job
+            if (!student.getAppliedJobs().contains(job)) {
+                student.getAppliedJobs().add(job);
+                studentRepository.save(student);
+                return true; // Successfully applied
+            }
+        }
+        return false; // Application failed
+    }*/
+
+    /*@Override
+    public List<Job> getAppliedJobs(int studentId) {
+        Optional<Student> studentOpt = studentRepository.findById(studentId);
+        return studentOpt.map(Student::getAppliedJobs).orElse(List.of()); // Return applied jobs or empty list
+    }*/
+    
+    @Override
+    public Student findByEmail(String email) {
+        return studentRepository.findByEmail(email);
+    }
+
+}
