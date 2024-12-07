@@ -1,0 +1,195 @@
+/* Reset Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    height: 100vh;
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+    overflow-y: auto; /* Allow vertical scrolling */
+    background-color: #f4f4f4;
+}
+
+/* Navbar Styles */
+.navbar {
+    background-color: #0e6ce6; /* Navbar background color */
+    padding: 20px 20px;
+    display: flex;
+    justify-content: space-between; /* Space between items */
+    align-items: center;
+    color: #000; /* Text color */
+    border-radius: 8px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.navbar .placement-portal {
+    margin: 0 auto; /* Center the title */
+    color: #fff; /* Title color */
+    text-align: center;
+}
+
+.navbar .admin-login {
+    margin-left: 90%; /* Push the button to the right */
+}
+
+/* Slideshow Styles */
+.slideshow {
+    position: relative;
+    width: 100%;
+    height: 100vh; /* Full viewport height */
+    overflow: hidden;
+}
+
+.slideshow-image {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensure images cover the container */
+    opacity: 0; /* Initially hidden */
+    animation: fade 20s infinite; /* Fade animation */
+    transition: opacity 0.5s ease-in-out; /* Smooth transitions */
+}
+
+/* Fade Animation Timing */
+.slideshow-image:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.slideshow-image:nth-child(2) {
+    animation-delay: 5s;
+}
+
+.slideshow-image:nth-child(3) {
+    animation-delay: 10s;
+}
+
+.slideshow-image:nth-child(4) {
+    animation-delay: 15s;
+}
+
+@keyframes fade {
+    0%, 25% {
+        opacity: 1; /* Visible */
+    }
+    33%, 100% {
+        opacity: 0; /* Fade out */
+    }
+}
+
+/* Overlay Section */
+.overlay {
+    position: absolute;
+    top: 50%; /* Center vertically */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%; /* Full width */
+    z-index: 10;
+    display: flex; /* Align items side by side */
+    justify-content: space-between;
+    gap: 20px; /* Space between sections */
+    padding: 0 20px; /* Padding on sides */
+}
+
+/* Student Section */
+.overlay .student-section {
+    width: 48%; /* Adjust width */
+}
+
+/* Recruiter Section */
+.overlay .recruiter-section {
+    width: 20%; /* Adjust width */
+    height: 100%;
+}
+
+/* Card Styles */
+.container {
+    display: flex;
+    justify-content: space-around;
+    padding: 20px;
+    gap: 20px;
+    flex-wrap: wrap;
+    z-index: 20; /* Content above images */
+}
+
+.card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%; /* Full width for small screens */
+    max-width: 300px; /* Max width for larger screens */
+    text-align: center;
+    padding: 20px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+}
+
+.card h2 {
+    margin-bottom: 10px;
+    font-size: 1.5rem;
+    color: #333;
+}
+
+.card p {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 15px;
+}
+
+.card-links {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn {
+    background: #2575fc;
+    color: #fff;
+    padding: 10px 15px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    background: #1a5dc4;
+    transform: scale(1.05); /* Zoom on hover */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .navbar h1 {
+        font-size: 1.5rem;
+    }
+
+    .card {
+        width: 90%; /* Card width for smaller screens */
+        margin-bottom: 20px;
+    }
+
+    .navbar .placement-portal {
+        font-size: 1.3rem;
+    }
+
+    /* Adjust card styling */
+    .card .card-body {
+        padding: 15px;
+    }
+}

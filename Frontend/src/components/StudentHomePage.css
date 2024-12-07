@@ -1,0 +1,105 @@
+/* StudentHomePage.css */
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+  }
+  
+  .student-home {
+    display: flex;
+  }
+  
+  .sidebar {
+    width: 200px;
+    background-color: #1d1b31;
+    height: 100vh;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 30px;
+  }
+  
+  .sidebar h2.logo {
+    margin-bottom: 30px;
+  }
+  
+  .sidebar ul {
+    list-style: none;
+    padding: 0;
+    width: 100%;
+  }
+  
+  .sidebar ul li {
+    width: 100%;
+    text-align: center;
+  }
+  
+  .sidebar ul li a {
+    display: block;
+    color: white;
+    text-decoration: none;
+    padding: 15px;
+    border-bottom: 1px solid #444;
+  }
+  
+  .sidebar ul li a:hover {
+    background-color: #575a89;
+  }
+  
+  .main-content {
+    padding: 20px;
+    width: 100%;
+  }
+  
+  .header {
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  .content h3 {
+    color: #444;
+  }
+  
+  .buttons-list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .buttons-list li {
+    margin-bottom: 10px;
+  }
+  
+  .btn {
+    display: inline-block;
+    padding: 10px 20px;
+    text-decoration: none;
+    color: white;
+    border-radius: 5px;
+  }
+  
+  .btn-info {
+    background-color: #17a2b8;
+  }
+  
+  .btn-info:hover {
+    background-color: #138496;
+  }
+  
+  .btn-success {
+    background-color: #28a745;
+  }
+  
+  .btn-success:hover {
+    background-color: #218838;
+  }
+  
+  .btn-warning {
+    background-color: #ffc107;
+    color: black;
+  }
+  
+  .btn-warning:hover {
+    background-color: #e0a800;
+  }
+  
